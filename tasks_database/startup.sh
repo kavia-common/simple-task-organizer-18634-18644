@@ -113,6 +113,16 @@ if (db.getUser("appuser") == null) {
 print("MongoDB setup complete!");
 EOF
 
+# After user and DB setup, initialize collections, schema, and indexes
+if [ -f "init/01_init_collections.js" ]; then
+    echo "Running collection initialization script..."
+    mongosh "mongodb://${DB_USER}:${DB_PASSWORD}@localhost:${DB_PORT}/${DB_NAME}?authSource=admin" init/01_init_collections.js || {
+        echo "Warning: Initialization script failed to run. You can run it manually later."
+    }
+else
+    echo "No initialization script found at init/01_init_collections.js (this is okay)."
+fi
+
 # Save connection command to a file
 echo "mongosh mongodb://${DB_USER}:${DB_PASSWORD}@localhost:${DB_PORT}/${DB_NAME}?authSource=admin" > db_connection.txt
 echo "Connection string saved to db_connection.txt"
